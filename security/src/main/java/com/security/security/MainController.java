@@ -17,14 +17,14 @@ public class MainController {
         return "/login_success";
     }
 
-    @GetMapping("/get")
-    public String get() {
-        return "get";
-    }
-
     @GetMapping("/hello")
     public String hello3() {
         return "hello";
+    }
+
+    @GetMapping("/error")
+    public String error() {
+        return "error";
     }
 
 }

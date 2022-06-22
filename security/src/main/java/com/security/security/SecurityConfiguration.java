@@ -3,54 +3,41 @@ package com.security.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Autowired
-    private MyUsernamePasswordAuthenticationFilter myUsernamePasswordAuthenticationFilter;
+    private TokenFilter tokenFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.exceptionHandling()
-                .accessDeniedHandler((request, response, ex) -> {
-                    response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    PrintWriter out = response.getWriter();
-                    out.write("securityFilterChain - accessDenied");
-                    out.flush();
-                    out.close();
-                })
-                .authenticationEntryPoint((request, response, ex) -> {
-                    response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    PrintWriter out = response.getWriter();
-                    out.write("securityFilterChain - authenticationEntry :\n" + ex.toString());
-                    out.flush();
-                    out.close();
-                })
-                .and()
-
+        return http
                 .authorizeRequests()
+                .antMatchers("/", "/home").permitAll()
+                .antMatchers("/error").permitAll()
+                .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
 
-                .addFilterAt(myUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors().disable()
                 .csrf().disable()
+                // 此步会在登录后丢失认证信息，默认是session调取，我们关掉session后需要在后面 放入认证信息
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
 
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        return http.build();
+                // 一定要在AnonymousAuthenticationFilter 添加过滤器，放入Authentication认证信息
+                // 或者是使用RememberMe也可以放入认证信息 .rememberMe()官方提供的token实现
+                .addFilterAt(tokenFilter, AnonymousAuthenticationFilter.class)
+
+                .build();
+
     }
 
 }
