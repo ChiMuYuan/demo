@@ -22,6 +22,7 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
                         authentication.getCredentials(),
                         Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"))
                 );
+
         usernamePasswordAuthenticationToken.setDetails(authentication.getDetails());
         return usernamePasswordAuthenticationToken;
     }
