@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springboot3.mapper.UserMapper">
+
+    <resultMap id="UserDTO" type="com.example.springboot3.entity.dto.UserDTO">
+        <id column="user_id" property="userId" />
+        <collection javaType="java.util.List" ofType="com.example.springboot3.entity.SysRole" property="roleList">
+            <id column="r_role_id" property="roleId" />
+        </collection>
+    </resultMap>
+
+    <select id="getUserDTO" resultMap="UserDTO">
+        SELECT 1
+    </select>
+
+</mapper>
