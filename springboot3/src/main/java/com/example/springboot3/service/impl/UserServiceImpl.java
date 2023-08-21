@@ -10,14 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
-/**
- * <p>
- * 用户表 服务实现类
- * </p>
- *
- * @author ChiMu Yuan
- * @since 2021-03-19
- */
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
